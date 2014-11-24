@@ -66,30 +66,32 @@ echo "alias starttransmission=\"sudo service transmission-daemon start\"" >> /ho
 echo "alias stoptransmission=\"sudo service transmission-daemon stop\"" >> /home/$sb_username/.bashrc
 echo "alias reloadtransmission=\"sudo service transmission-daemon reload\"" >> /home/$sb_username/.bashrc
 
-cp -a /etc/transmission-daemon/settings.json /etc/transmission-daemon/settings.json.default
-mkdir -p /home/$sb_username/.config/transmission-daemon
-cp -a /etc/transmission-daemon/settings.json /home/$sb_username/.config/transmission-daemon
-chgrp -R debian-transmission /home/$sb_username/.config/transmission-daemon
-chmod -R 770 /home/$sb_username/.config/transmission-daemon
+# cp -a /var/lib/transmission-daemon/info/settings.json /var/lib/transmission-daemon/info/settings.json.default
+# mkdir -p /home/$sb_username/.config/transmission-daemon
+# cp -a /var/lib/transmission-daemon/info/settings.json /home/$sb_username/.config/transmission-daemon
+# chgrp -R debian-transmission /home/$sb_username/.config/transmission-daemon
+# chmod -R 770 /home/$sb_username/.config/transmission-daemon
 
-rm /etc/transmission-daemon/settings.json
-ln -s /home/$sb_username/.config/transmission-daemon/settings.json /etc/transmission-daemon/settings.json
-chgrp -R debian-transmission /etc/transmission-daemon/settings.json
-chmod -R 770 /etc/transmission-daemon/settings.json
+# rm /var/lib/transmission-daemon/info/settings.json
+# ln -s /home/$sb_username/.config/transmission-daemon/settings.json /var/lib/transmission-daemon/info/settings.json
+# chgrp -R debian-transmission /var/lib/transmission-daemon/info/settings.json
+# chmod -R 770 /var/lib/transmission-daemon/info/settings.json
 
 chown -R $sb_username /home/$sb_username/
 chgrp -R viking /home/$sb_username/.config
 
-# @TODO(Shrugs) make sure the above works and then make sed commands for settings file
+# TRANSMISSION_SETTINGS_FILE="/home/$sb_username/.config/transmission-daemon/settings.json"
+TRANSMISSION_SETTINGS_FILE="/etc/transmission-daemon/settings.json"
 
 # change username, password, and port
 # change complete, incomplete, and watch dirs
-sed -i '/download-dir/c\"download-dir": "/home/'"$sb_username"'/transmission/Complete",' /home/$sb_username/.config/transmission-daemon/settings.json
-sed -i '/incomplete-dir/c\"incomplete-dir": "/home/'"$sb_username"'/transmission/Incomplete",' /home/$sb_username/.config/transmission-daemon/settings.json
+sed -i '/download-dir/c\"download-dir": "/home/'"$sb_username"'/transmission/Complete",' $TRANSMISSION_SETTINGS_FILE
+sed -i '/incomplete-dir/c\"incomplete-dir": "/home/'"$sb_username"'/transmission/Incomplete",' $TRANSMISSION_SETTINGS_FILE
+sed -i '/rpc-whitelist-enabled/c\"rpc-whitelist-enabled": false,' $TRANSMISSION_SETTINGS_FILE
 # @TODO(Shrugs) get watch-dir and watch-dir-enabled in there
-sed -i '/rpc-password/c\"rpc-password": "$sb_transmission_password",' /home/$sb_username/.config/transmission-daemon/settings.json
-sed -i '/rpc-username/c\"rpc-username": "$sb_transmission_username",' /home/$sb_username/.config/transmission-daemon/settings.json
-sed -i '/rpc-port/c\"rpc-port": "$sb_transmission_port",' /home/$sb_username/.config/transmission-daemon/settings.json
+sed -i '/rpc-password/c\"rpc-password": "'"$sb_transmission_password"'",' $TRANSMISSION_SETTINGS_FILE
+sed -i '/rpc-username/c\"rpc-username": "'"$sb_transmission_username"'",' $TRANSMISSION_SETTINGS_FILE
+sed -i '/rpc-port/c\"rpc-port": "'"$sb_transmission_port"'",' $TRANSMISSION_SETTINGS_FILE
 
 
 
@@ -102,3 +104,15 @@ apt-get -f install -y
 
 
 # ssh-copy-id ~/.ssh/id_rsa.pub viking@<ip>
+
+sb_ip_addr=$(ip addr show eth0 | grep "inet " | awk '{print $2}' | sed "s/\/..//")
+
+echo
+echo
+echo
+echo "Next, log into OpenVPN at https://$sb_ip_addr:943/admin and agree to the T&C."
+echo "Then, log into $sb_ip_addr:9099 to check out the Transmission interface."
+echo "To configure Plex, you must proxy your connection to the server and access it from local host."
+echo "Run 'ssh -2nN -D 8080 $sb_username@$sb_ip_addr' and then point your browser to a localhost SOCKS5 proxy on port 8080"
+echo "Then go to $sb_ip_addr:32400/web and configure your server from the Settings>Server tab."
+echo "For convenience, run 'ssh-copy-id -i ~/.ssh/id_rsa.pub $sb_username@$sb_ip_addr'"
