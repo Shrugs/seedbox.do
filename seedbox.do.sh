@@ -24,6 +24,7 @@ echo "Creating User"
 # create user and allow sudo
 useradd -m $sb_username -s /bin/bash -G sudo -U -d/home/$sb_username
 # prompt for password change
+echo "Set User Password: "
 passwd $sb_username
 
 ## lock down root ssh
@@ -38,12 +39,13 @@ echo "Downloading/Installing OpenVPN"
 wget http://swupdate.openvpn.org/as/openvpn-as-2.0.10-Ubuntu14.amd_64.deb
 dpkg -i openvpn-as-2.0.10-Ubuntu14.amd_64.deb
 rm openvpn-as-2.0.10-Ubuntu14.amd_64.deb
+echo "Set OpenVPN Password: "
 passwd openvpn
 
 # @TODO(Shrugs) set hostname in openvpn settings
 
 # install transmission, change password to variable, restart and serve
-apt-get install transmission-cli transmission-common transmission-daemon
+apt-get install transmission-cli transmission-common transmission-daemon -y
 # set up directory structure
 mkdir -p /home/$sb_username/transmission/Complete
 mkdir -p /home/$sb_username/transmission/Incomplete
@@ -58,27 +60,38 @@ echo "alias stoptransmission=\"sudo service transmission-daemon stop\"" >> /home
 echo "alias reloadtransmission=\"sudo service transmission-daemon reload\"" >> /home/$sb_username/.bashrc
 
 cp -a /etc/transmission-daemon/settings.json /etc/transmission-daemon/settings.json.default
-mkdir /home/$sb_username/.config/transmission-daemon
-sudo cp -a /etc/transmission-daemon/settings.json transmission-daemon/
-sudo chgrp -R debian-transmission /home/$sb_username/.config/transmission-daemon
-sudo chmod -R 770 /home/$sb_username/.config/transmission-daemon
+mkdir -p /home/$sb_username/.config/transmission-daemon
+cp -a /etc/transmission-daemon/settings.json /home/$sb_username/.config/transmission-daemon
+chgrp -R debian-transmission /home/$sb_username/.config/transmission-daemon
+chmod -R 770 /home/$sb_username/.config/transmission-daemon
 
-sudo rm /etc/transmission-daemon/settings.json
-sudo ln -s /home/$sb_username/.config/transmission-daemon/settings.json /etc/transmission-daemon/settings.json
-sudo chgrp -R debian-transmission /etc/transmission-daemon/settings.json
-sudo chmod -R 770 /etc/transmission-daemon/settings.json
+rm /etc/transmission-daemon/settings.json
+ln -s /home/$sb_username/.config/transmission-daemon/settings.json /etc/transmission-daemon/settings.json
+chgrp -R debian-transmission /etc/transmission-daemon/settings.json
+chmod -R 770 /etc/transmission-daemon/settings.json
+
+chown -R $sb_username /home/$sb_username/
+chgrp -R viking /home/$sb_username/.config
 
 # @TODO(Shrugs) make sure the above works and then make sed commands for settings file
 
 # change username, password, and port
 # change complete, incomplete, and watch dirs
+sed -i '/download-dir/c\"download-dir": "/home/$sb_username/transmission/Complete",' /home/$sb_username/.config/transmission-daemon/settings.json
+sed -i '/incomplete-dir/c\"incomplete-dir": "/home/$sb_username/transmission/Incomplete",' /home/$sb_username/.config/transmission-daemon/settings.json
+# @TODO(Shrugs) get watch-dir and watch-dir-enabled in there
+sed -i '/rpc-password/c\"rpc-password": "$sb_transmission_password",' /home/$sb_username/.config/transmission-daemon/settings.json
+sed -i '/rpc-username/c\"rpc-username": "$sb_transmission_username",' /home/$sb_username/.config/transmission-daemon/settings.json
+sed -i '/rpc-port/c\"rpc-port": "$sb_transmission_port",' /home/$sb_username/.config/transmission-daemon/settings.json
+
+
 
 # install plex, give user url to configure
 wget https://downloads.plex.tv/plex-media-server/0.9.11.1.678-c48ffd2/plexmediaserver_0.9.11.1.678-c48ffd2_amd64.deb
 dpkg -i plexmediaserver_0.9.11.1.678-c48ffd2_amd64.deb
 rm plexmediaserver_0.9.11.1.678-c48ffd2_amd64.deb
 
-apt-get install avahi-daemon
+apt-get -f install
 
 
 # ssh-copy-id ~/.ssh/id_rsa.pub viking@<ip>
