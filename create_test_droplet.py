@@ -1,9 +1,10 @@
 import skiff
+from time import sleep
 from info import api_key
 
 s = skiff.rig(api_key)
 my_droplet = s.Droplet.create({
-    "name": "Testing",
+    "name": "Viking",
     "region": "ams2",
     "size": "512mb",
     "image": "ubuntu-14-04-x64",
@@ -12,5 +13,7 @@ my_droplet = s.Droplet.create({
     "ipv6": False,
 })
 print("Created, Waiting...")
-my_droplet.wait_till_done()
-print my_droplet.refresh().networks["v4"][0]["ip_address"]
+sleep(2)
+my_droplet.wait_till_done(5)
+my_droplet = my_droplet.reload()
+print my_droplet.networks["v4"][0]["ip_address"]
