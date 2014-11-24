@@ -19,7 +19,8 @@ echo "Updating apt"
 add-apt-repository ppa:transmissionbt/ppa
 apt-get update
 apt-get upgrade -y
-
+echo
+echo
 echo "Creating User"
 # create user and allow sudo
 useradd -m $sb_username -s /bin/bash -G sudo -U -d/home/$sb_username
@@ -28,6 +29,8 @@ echo "Set User Password: "
 passwd $sb_username
 
 ## lock down root ssh
+echo
+echo
 echo "Configuring SSH"
 # change port
 sed -i.bak "s/Port 22/Port $sb_ssh_port/g" /etc/ssh/sshd_config
@@ -35,10 +38,14 @@ sed -i.bak "s/Port 22/Port $sb_ssh_port/g" /etc/ssh/sshd_config
 sed -i.bak "s/PermitRootLogin yes/PermitRootLogin no/g" /etc/ssh/sshd_config
 
 # install openvpn and set up
+echo
+echo
 echo "Downloading/Installing OpenVPN"
 wget http://swupdate.openvpn.org/as/openvpn-as-2.0.10-Ubuntu14.amd_64.deb
 dpkg -i openvpn-as-2.0.10-Ubuntu14.amd_64.deb
 rm openvpn-as-2.0.10-Ubuntu14.amd_64.deb
+echo
+echo
 echo "Set OpenVPN Password: "
 passwd openvpn
 
@@ -77,8 +84,8 @@ chgrp -R viking /home/$sb_username/.config
 
 # change username, password, and port
 # change complete, incomplete, and watch dirs
-sed -i '/download-dir/c\"download-dir": "/home/$sb_username/transmission/Complete",' /home/$sb_username/.config/transmission-daemon/settings.json
-sed -i '/incomplete-dir/c\"incomplete-dir": "/home/$sb_username/transmission/Incomplete",' /home/$sb_username/.config/transmission-daemon/settings.json
+sed -i '/download-dir/c\"download-dir": "/home/'"$sb_username"'/transmission/Complete",' /home/$sb_username/.config/transmission-daemon/settings.json
+sed -i '/incomplete-dir/c\"incomplete-dir": "/home/'"$sb_username"'/transmission/Incomplete",' /home/$sb_username/.config/transmission-daemon/settings.json
 # @TODO(Shrugs) get watch-dir and watch-dir-enabled in there
 sed -i '/rpc-password/c\"rpc-password": "$sb_transmission_password",' /home/$sb_username/.config/transmission-daemon/settings.json
 sed -i '/rpc-username/c\"rpc-username": "$sb_transmission_username",' /home/$sb_username/.config/transmission-daemon/settings.json
@@ -91,7 +98,7 @@ wget https://downloads.plex.tv/plex-media-server/0.9.11.1.678-c48ffd2/plexmedias
 dpkg -i plexmediaserver_0.9.11.1.678-c48ffd2_amd64.deb
 rm plexmediaserver_0.9.11.1.678-c48ffd2_amd64.deb
 
-apt-get -f install
+apt-get -f install -y
 
 
 # ssh-copy-id ~/.ssh/id_rsa.pub viking@<ip>

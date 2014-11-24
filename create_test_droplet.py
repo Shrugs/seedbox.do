@@ -3,7 +3,7 @@ from info import api_key
 
 s = skiff.rig(api_key)
 my_droplet = s.Droplet.create({
-    "name": "Viking",
+    "name": "Testing",
     "region": "ams2",
     "size": "512mb",
     "image": "ubuntu-14-04-x64",
