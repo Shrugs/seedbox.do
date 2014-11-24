@@ -61,38 +61,25 @@ mkdir -p /home/$sb_username/transmission/Torrents
 usermod -a -G debian-transmission $sb_username
 chgrp -R debian-transmission /home/$sb_username/transmission
 chmod -R 775 /home/$sb_username/transmission
-# add shortcuts to ~/.bashrc
-echo "alias starttransmission=\"sudo service transmission-daemon start\"" >> /home/$sb_username/.bashrc
-echo "alias stoptransmission=\"sudo service transmission-daemon stop\"" >> /home/$sb_username/.bashrc
-echo "alias reloadtransmission=\"sudo service transmission-daemon reload\"" >> /home/$sb_username/.bashrc
-
-# cp -a /var/lib/transmission-daemon/info/settings.json /var/lib/transmission-daemon/info/settings.json.default
-# mkdir -p /home/$sb_username/.config/transmission-daemon
-# cp -a /var/lib/transmission-daemon/info/settings.json /home/$sb_username/.config/transmission-daemon
-# chgrp -R debian-transmission /home/$sb_username/.config/transmission-daemon
-# chmod -R 770 /home/$sb_username/.config/transmission-daemon
-
-# rm /var/lib/transmission-daemon/info/settings.json
-# ln -s /home/$sb_username/.config/transmission-daemon/settings.json /var/lib/transmission-daemon/info/settings.json
-# chgrp -R debian-transmission /var/lib/transmission-daemon/info/settings.json
-# chmod -R 770 /var/lib/transmission-daemon/info/settings.json
-
 chown -R $sb_username /home/$sb_username/
-chgrp -R viking /home/$sb_username/.config
+
+
 
 # TRANSMISSION_SETTINGS_FILE="/home/$sb_username/.config/transmission-daemon/settings.json"
 TRANSMISSION_SETTINGS_FILE="/etc/transmission-daemon/settings.json"
 
+service transmission-daemon stop
 # change username, password, and port
 # change complete, incomplete, and watch dirs
 sed -i '/download-dir/c\"download-dir": "/home/'"$sb_username"'/transmission/Complete",' $TRANSMISSION_SETTINGS_FILE
-sed -i '/incomplete-dir/c\"incomplete-dir": "/home/'"$sb_username"'/transmission/Incomplete",' $TRANSMISSION_SETTINGS_FILE
+sed -i '/incomplete-dir"/c\"incomplete-dir": "/home/'"$sb_username"'/transmission/Incomplete",' $TRANSMISSION_SETTINGS_FILE
 sed -i '/rpc-whitelist-enabled/c\"rpc-whitelist-enabled": false,' $TRANSMISSION_SETTINGS_FILE
 # @TODO(Shrugs) get watch-dir and watch-dir-enabled in there
 sed -i '/rpc-password/c\"rpc-password": "'"$sb_transmission_password"'",' $TRANSMISSION_SETTINGS_FILE
 sed -i '/rpc-username/c\"rpc-username": "'"$sb_transmission_username"'",' $TRANSMISSION_SETTINGS_FILE
 sed -i '/rpc-port/c\"rpc-port": "'"$sb_transmission_port"'",' $TRANSMISSION_SETTINGS_FILE
-
+cp $TRANSMISSION_SETTINGS_FILE $TRANSMISSION_SETTINGS_FILE.default
+service transmission-daemon start
 
 
 # install plex, give user url to configure
