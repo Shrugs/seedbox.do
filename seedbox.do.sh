@@ -4,7 +4,7 @@
 
 # ask for username/password for everything
 read -e -p "Choose Username: " sb_username
-sb_transmission_username = sb_username
+sb_transmission_username = $sb_username
 read -e -p "Choose Transmission Username [$sb_username]: " sb_transmission_username
 read -e -p "Choose Transmission Password: " sb_transmission_password
 # ask for transmission port
