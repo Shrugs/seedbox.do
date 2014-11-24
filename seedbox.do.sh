@@ -4,14 +4,14 @@
 
 # ask for username/password for everything
 read -e -p "Choose Username: " sb_username
-sb_transmission_username = $sb_username
+sb_transmission_username=$sb_username
 read -e -p "Choose Transmission Username [$sb_username]: " sb_transmission_username
 read -e -p "Choose Transmission Password: " sb_transmission_password
 # ask for transmission port
-sb_transmission_port = 9025
+sb_transmission_port=9025
 read -e -p "Choose Transmission Port [9025]: " sb_transmission_port
 # ask for new ssh port [2200]
-sb_ssh_port = 2200
+sb_ssh_port=2200
 read -e -p "Make SSHH port: [2200] " sb_ssh_port
 
 # update stuff
@@ -53,9 +53,9 @@ usermod -a -G debian-transmission $sb_username
 chgrp -R debian-transmission /home/$sb_username/transmission
 chmod -R 775 /home/$sb_username/transmission
 # add shortcuts to ~/.bashrc
-echo "alias starttransmission = \"sudo service transmission-daemon start\"" >> /home/$sb_username/.bashrc
-echo "alias stoptransmission = \"sudo service transmission-daemon stop\"" >> /home/$sb_username/.bashrc
-echo "alias reloadtransmission = \"sudo service transmission-daemon reload\"" >> /home/$sb_username/.bashrc
+echo "alias starttransmission=\"sudo service transmission-daemon start\"" >> /home/$sb_username/.bashrc
+echo "alias stoptransmission=\"sudo service transmission-daemon stop\"" >> /home/$sb_username/.bashrc
+echo "alias reloadtransmission=\"sudo service transmission-daemon reload\"" >> /home/$sb_username/.bashrc
 
 cp -a /etc/transmission-daemon/settings.json /etc/transmission-daemon/settings.json.default
 mkdir /home/$sb_username/.config/transmission-daemon
