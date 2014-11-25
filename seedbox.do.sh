@@ -18,7 +18,7 @@ read -e -p "Make SSHH port: [2200] " sb_ssh_port
 echo "Updating apt"
 apt-get update
 apt-get upgrade -y
-apt-get install python-software-properties
+apt-get install python-software-properties -y
 add-apt-repository ppa:transmissionbt/ppa
 apt-get update
 echo
