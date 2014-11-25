@@ -16,9 +16,11 @@ read -e -p "Make SSHH port: [2200] " sb_ssh_port
 
 # update stuff
 echo "Updating apt"
-add-apt-repository ppa:transmissionbt/ppa
 apt-get update
 apt-get upgrade -y
+apt-get install python-software-properties
+add-apt-repository ppa:transmissionbt/ppa
+apt-get update
 echo
 echo
 echo "Creating User"
