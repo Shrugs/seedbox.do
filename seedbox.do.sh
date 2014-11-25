@@ -90,7 +90,6 @@ sb_ip_addr=$(ip addr show eth0 | grep "inet " | awk '{print $2}' | sed "s/\/..//
 echo
 echo
 echo
-echo "Next, log into OpenVPN at https://$sb_ip_addr:943/admin and agree to the T&C."
 echo "Then, log into $sb_ip_addr:9099 to check out the Transmission interface."
 echo "To configure Plex, you must proxy your connection to the server and access it from local host."
 echo "Run 'ssh -2nN -D 8080 $sb_username@$sb_ip_addr' and then point your browser to a localhost SOCKS5 proxy on port 8080"
