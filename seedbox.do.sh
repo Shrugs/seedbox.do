@@ -4,26 +4,23 @@
 
 # ask for username/password for everything
 read -e -p "Choose Username: " sb_username
-sb_transmission_username=$sb_username
-read -e -p "Choose Transmission Username [$sb_username]: " sb_transmission_username
+read -e -p "Choose Transmission Username [$sb_username]: " -i "$sb_username" sb_transmission_username
 read -e -p "Choose Transmission Password: " sb_transmission_password
 # ask for transmission port
-sb_transmission_port=9025
-read -e -p "Choose Transmission Port [9025]: " sb_transmission_port
+read -e -p "Choose Transmission Port [9025]: " -i 9025 sb_transmission_port
 # ask for new ssh port [2200]
-sb_ssh_port=2200
-read -e -p "Make SSHH port: [2200] " sb_ssh_port
+read -e -p "Make SSHH port: [2200] " -i 2200 sb_ssh_port
 
 # update stuff
-echo "Updating apt"
+echo "Updating apt..."
 apt-get update
 apt-get upgrade -y
 apt-get install python-software-properties -y
 add-apt-repository ppa:transmissionbt/ppa
 apt-get update
-echo
-echo
-echo "Creating User"
+echo ""
+echo ""
+echo "Creating User..."
 # create user and allow sudo
 useradd -m $sb_username -s /bin/bash -G sudo -U -d/home/$sb_username
 # prompt for password change
@@ -33,7 +30,7 @@ passwd $sb_username
 ## lock down root ssh
 echo
 echo
-echo "Configuring SSH"
+echo "Configuring SSH..."
 # change port
 sed -i.bak "s/Port 22/Port $sb_ssh_port/g" /etc/ssh/sshd_config
 # disallow root ssh
@@ -41,7 +38,7 @@ sed -i.bak "s/PermitRootLogin yes/PermitRootLogin no/g" /etc/ssh/sshd_config
 
 # install openvpn and set up
 # via https://github.com/Nyr/openvpn-install
-wget git.io/vpn --no-check-certificate -O openvpn-install.sh; bash openvpn-install.sh
+wget https://raw.githubusercontent.com/Shrugs/openvpn-install/master/openvpn-install.sh --no-check-certificate -O openvpn-install.sh; bash openvpn-install.sh
 
 # install transmission, change password to variable, restart and serve
 apt-get install transmission-cli transmission-common transmission-daemon -y
