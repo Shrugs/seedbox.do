@@ -38,18 +38,8 @@ sed -i.bak "s/Port 22/Port $sb_ssh_port/g" /etc/ssh/sshd_config
 sed -i.bak "s/PermitRootLogin yes/PermitRootLogin no/g" /etc/ssh/sshd_config
 
 # install openvpn and set up
-echo
-echo
-echo "Downloading/Installing OpenVPN"
-wget http://swupdate.openvpn.org/as/openvpn-as-2.0.10-Ubuntu14.amd_64.deb
-dpkg -i openvpn-as-2.0.10-Ubuntu14.amd_64.deb
-rm openvpn-as-2.0.10-Ubuntu14.amd_64.deb
-echo
-echo
-echo "Set OpenVPN Password: "
-passwd openvpn
-
-# @TODO(Shrugs) set hostname in openvpn settings
+# via https://github.com/Nyr/openvpn-install
+wget git.io/vpn --no-check-certificate -O openvpn-install.sh; bash openvpn-install.sh
 
 # install transmission, change password to variable, restart and serve
 apt-get install transmission-cli transmission-common transmission-daemon -y
@@ -73,6 +63,7 @@ service transmission-daemon stop
 # change complete, incomplete, and watch dirs
 sed -i '/download-dir/c\"download-dir": "/home/'"$sb_username"'/transmission/Complete",' $TRANSMISSION_SETTINGS_FILE
 sed -i '/incomplete-dir"/c\"incomplete-dir": "/home/'"$sb_username"'/transmission/Incomplete",' $TRANSMISSION_SETTINGS_FILE
+sed -i '/incomplete-dir-enabled/c\"incomplete-dir-enabled": true,' $TRANSMISSION_SETTINGS_FIL
 sed -i '/rpc-whitelist-enabled/c\"rpc-whitelist-enabled": false,' $TRANSMISSION_SETTINGS_FILE
 # @TODO(Shrugs) get watch-dir and watch-dir-enabled in there
 sed -i '/rpc-password/c\"rpc-password": "'"$sb_transmission_password"'",' $TRANSMISSION_SETTINGS_FILE
