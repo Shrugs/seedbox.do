@@ -67,9 +67,12 @@ sed -i '/rpc-whitelist-enabled/c\"rpc-whitelist-enabled": false,' $TRANSMISSION_
 # @TODO(Shrugs) get watch-dir and watch-dir-enabled in there
 sed -i '/rpc-password/c\"rpc-password": "'"$sb_transmission_password"'",' $TRANSMISSION_SETTINGS_FILE
 sed -i '/rpc-username/c\"rpc-username": "'"$sb_transmission_username"'",' $TRANSMISSION_SETTINGS_FILE
-sed -i '/rpc-port/c\"rpc-port": "'"$sb_transmission_port"'",' $TRANSMISSION_SETTINGS_FILE
+sed -i '/rpc-port/c\"rpc-port": "'"$sb_transmission_username"'",' $TRANSMISSION_SETTINGS_FILE
 cp $TRANSMISSION_SETTINGS_FILE $TRANSMISSION_SETTINGS_FILE.default
 service transmission-daemon start
+
+# add user to debian-transmission group
+groupadd -aG debian-transmission $sb_username
 
 
 # install plex, give user url to configure
@@ -92,3 +95,4 @@ echo "To configure Plex, you must proxy your connection to the server and access
 echo "Run 'ssh -2nN -D 8080 $sb_username@$sb_ip_addr' and then point your browser to a localhost SOCKS5 proxy on port 8080"
 echo "Then go to $sb_ip_addr:32400/web and configure your server from the Settings>Server tab."
 echo "For convenience, run 'ssh-copy-id -i ~/.ssh/id_rsa.pub $sb_username@$sb_ip_addr'"
+service ssh restart
